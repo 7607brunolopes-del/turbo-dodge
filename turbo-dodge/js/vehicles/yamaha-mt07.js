@@ -3,7 +3,7 @@
 // =====================================================================
 // YAMAHA MT-07
 // =====================================================================
-function buildMT07(def, paint, accent) {
+function buildMT07(def, paint, accent) {  
   const v = newVehicle(def), C = v.chassis;
   const M = {
     paint: physical(paint, { metalness: .45, roughness: .32 }),

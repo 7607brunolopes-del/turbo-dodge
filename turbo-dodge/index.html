@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Turbo Dodge 3D</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,700;1,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Reflector.js"></script>
+
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/loader.css">
+<link rel="stylesheet" href="css/garage.css">
+<link rel="stylesheet" href="css/hud.css">
+<link rel="stylesheet" href="css/modals.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+
+<div id="stage" class="grab"></div>
+<div id="vignette"></div>
+<div id="flash"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-inner">
+    <span class="brand-logo"><i class="fa-solid fa-bolt"></i></span>
+    <div class="loader-title">TURBO DODGE</div>
+    <div class="loader-bar"><span id="loader-fill"></span></div>
+    <p id="loader-text">A iniciar…</p>
+  </div>
+</div>
+
+<!-- ================= GARAGEM ================= -->
+<div id="garage" class="screen hidden">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-logo"><i class="fa-solid fa-bolt"></i></span>
+      <div>
+        <div class="brand-name">TURBO DODGE</div>
+        <div class="brand-sub">Garagem · Prova de Aptidão Profissional</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="chip"><i class="fa-solid fa-trophy"></i><span>Recorde</span><b id="g-record">0</b></div>
+      <button class="icon-btn sound-btn" title="Som (M)"><i class="fa-solid fa-volume-high"></i></button>
+      <button class="icon-btn" onclick="toggleFullscreen()" title="Ecrã inteiro (F)"><i class="fa-solid fa-expand"></i></button>
+    </div>
+  </header>
+
+  <aside class="panel vlist">
+    <div class="panel-head"><span class="eyebrow">Garagem</span><span class="count" id="v-count">3</span></div>
+    <div id="vehicle-cards" style="display:contents"></div>
+  </aside>
+
+  <div class="side-col">
+    <section class="panel spec" id="spec">
+      <button class="spec-toggle" onclick="document.getElementById('spec').classList.toggle('open')"><i class="fa-solid fa-circle-info"></i> Ficha</button>
+      <div class="spec-brand" id="s-brand">BMW M</div>
+      <h1 class="spec-name" id="s-name">M4</h1>
+      <div class="collapsible">
+        <div class="tags" id="s-tags"></div>
+        <div class="spec-grid" id="s-grid"></div>
+        <div class="bars" id="s-bars"></div>
+        <div class="label-row"><span class="eyebrow">Pintura</span><b id="s-paint-name"></b></div>
+        <div class="swatches" id="s-swatches"></div>
+        <button class="ghost-btn" id="rev-btn"><i class="fa-solid fa-volume-high"></i> Ouvir o motor</button>
+      </div>
+    </section>
+
+    <section class="panel race">
+      <div class="label-row"><span class="eyebrow">Dificuldade</span></div>
+      <div class="seg" id="diff-seg">
+        <button data-d="facil">Fácil</button>
+        <button data-d="medio">Médio</button>
+        <button data-d="dificil">Difícil</button>
+        <button data-d="extremo">Extremo</button>
+      </div>
+      <div class="label-row"><span class="eyebrow">Sensibilidade da direção</span><b id="sens-val">2.5x</b></div>
+      <input type="range" id="sens-slider" min="1" max="5" step="0.5" value="2.5">
+      <button class="primary-btn" onclick="startRace()"><span>Iniciar corrida</span><kbd>ENTER</kbd></button>
+    </section>
+  </div>
+
+  <div class="panel viewbar" id="viewbar">
+    <button data-view="front">Frente</button>
+    <button data-view="rear">Trás</button>
+    <button data-view="left">Esquerda</button>
+    <button data-view="right">Direita</button>
+    <button data-view="three" class="active">3/4</button>
+    <button data-view="top">Topo</button>
+    <span class="sep"></span>
+    <button id="rot-left" title="Rodar veículo (Q)"><i class="fa-solid fa-rotate-left"></i></button>
+    <button id="auto-rot" class="active" title="Rotação automática"><i class="fa-solid fa-arrows-spin"></i></button>
+    <button id="rot-right" title="Rodar veículo (E)"><i class="fa-solid fa-rotate-right"></i></button>
+  </div>
+  <div class="hint">
+    <span><i class="fa-solid fa-computer-mouse"></i>Arrastar: rodar câmara</span>
+    <span><kbd>Shift</kbd> + arrastar ou <kbd>Q</kbd>/<kbd>E</kbd>: rodar veículo</span>
+    <span>Roda do rato: zoom</span>
+  </div>
+</div>
+
+<!-- ================= HUD ================= -->
+<div id="hud" class="screen hidden">
+  <div class="hud-top">
+    <div class="panel hud-veh">
+      <div class="hud-veh-name" id="h-veh">BMW M4</div>
+      <div class="hud-diff">Dificuldade · <b id="h-diff">Médio</b></div>
+    </div>
+    <div class="hud-score">
+      <div class="score-val" id="h-score">0</div>
+      <div class="score-meta"><span class="mult" id="h-mult">x1.5</span><span id="h-dist">0 m</span></div>
+    </div>
+    <div class="hud-actions">
+      <button class="icon-btn sound-btn" title="Som (M)"><i class="fa-solid fa-volume-high"></i></button>
+      <button class="icon-btn" onclick="togglePause()" title="Pausa (P)"><i class="fa-solid fa-pause"></i></button>
+      <button class="icon-btn" onclick="toggleFullscreen()" title="Ecrã inteiro (F)"><i class="fa-solid fa-expand"></i></button>
+    </div>
+  </div>
+
+  <div class="hud-warning" id="h-warning">FORA DE PISTA</div>
+  <div class="hud-toast" id="h-toast">QUASE! +100</div>
+  <div class="countdown" id="countdown"></div>
+  <div class="controls-tip" id="controls-tip">
+    <span><kbd>A</kbd> <kbd>D</kbd> virar</span><span><kbd>W</kbd> acelerar</span><span><kbd>S</kbd> travar</span><span><kbd>Espaço</kbd> nitro</span><span><kbd>P</kbd> pausa</span>
+  </div>
+
+  <div class="panel speedo">
+    <div class="rpm" id="h-rpm"></div>
+    <div class="speed-row">
+      <div class="speed" id="h-speed">0</div>
+      <div class="speed-unit">km/h</div>
+      <div class="gear"><small>MUD.</small><b id="h-gear">N</b></div>
+    </div>
+    <div class="nitro"><i class="fa-solid fa-bolt"></i><div class="nitro-track"><div id="h-nitro"></div></div><span id="h-nitro-txt">100%</span></div>
+  </div>
+
+  <div class="touch touch-l">
+    <button id="t-left"><i class="fa-solid fa-chevron-left"></i></button>
+    <button id="t-right"><i class="fa-solid fa-chevron-right"></i></button>
+  </div>
+  <div class="touch touch-r">
+    <button id="t-brake"><i class="fa-solid fa-angles-down"></i></button>
+    <button id="t-boost" class="nitro-btn"><i class="fa-solid fa-bolt"></i></button>
+  </div>
+</div>
+
+<!-- ================= PAUSA ================= -->
+<div id="pause" class="modal hidden">
+  <div class="panel modal-card">
+    <span class="eyebrow">Corrida em pausa</span>
+    <h2>Pausa</h2>
+    <div class="field">
+      <div class="label-row" style="margin-top:0"><span class="eyebrow">Sensibilidade da direção</span><b id="p-sens-val">2.5x</b></div>
+      <input type="range" id="p-sens-slider" min="1" max="5" step="0.5" value="2.5">
+    </div>
+    <div class="modal-actions">
+      <button class="primary-btn" style="margin-top:0" onclick="togglePause()"><span>Continuar</span><i class="fa-solid fa-play"></i></button>
+      <button class="secondary-btn" onclick="restartRace()"><i class="fa-solid fa-rotate-right"></i> Reiniciar</button>
+      <button class="secondary-btn" onclick="enterGarage()"><i class="fa-solid fa-warehouse"></i> Voltar à garagem</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= FIM DE JOGO ================= -->
+<div id="gameover" class="modal hidden">
+  <div class="panel modal-card">
+    <span class="eyebrow" id="go-reason">Acidente registado</span>
+    <h2 class="red">Fim de corrida</h2>
+    <div class="record hidden" id="go-record"><i class="fa-solid fa-crown"></i> Novo recorde pessoal!</div>
+    <div class="result-grid">
+      <div class="big"><small>Pontuação</small><b id="go-score">0</b></div>
+      <div><small>Distância</small><b id="go-dist">0 m</b></div>
+      <div><small>Vel. máxima</small><b id="go-top">0 km/h</b></div>
+      <div><small>Quase-acidentes</small><b id="go-near">0</b></div>
+      <div><small>Veículo</small><b id="go-veh" style="font-size:20px">—</b></div>
+    </div>
+    <div class="btn-row">
+      <button class="primary-btn" onclick="restartRace()"><span>Repetir</span><i class="fa-solid fa-rotate-right"></i></button>
+      <button class="secondary-btn" onclick="enterGarage()"><i class="fa-solid fa-warehouse"></i> Garagem</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="js/core/utils.js"></script>
+<script src="js/core/config.js"></script>
+<script src="js/audio/sound-engine.js"></script>
+<script src="js/graphics/textures.js"></script>
+<script src="js/graphics/geometry.js"></script>
+<script src="js/vehicles/wheels.js"></script>
+<script src="js/vehicles/base.js"></script>
+<script src="js/vehicles/bmw-m4.js"></script>
+<script src="js/vehicles/honda-civic.js"></script>
+<script src="js/vehicles/yamaha-mt07.js"></script>
+<script src="js/vehicles/registry.js"></script>
+<script src="js/graphics/renderer.js"></script>
+<script src="js/scenes/garage.js"></script>
+<script src="js/scenes/track.js"></script>
+<script src="js/scenes/obstacles.js"></script>
+<script src="js/scenes/particles.js"></script>
+<script src="js/game/state.js"></script>
+<script src="js/ui/garage-ui.js"></script>
+<script src="js/game/screens.js"></script>
+<script src="js/game/race.js"></script>
+<script src="js/game/input.js"></script>
+<script src="js/ui/thumbnails.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

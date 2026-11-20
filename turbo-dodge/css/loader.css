@@ -1,0 +1,9 @@
+/* ---------- LOADER ---------- */
+#loader{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;transition:opacity .6s}
+#loader.done{opacity:0;pointer-events:none}
+.loader-inner{width:min(360px,80vw);text-align:center}
+.brand-logo{width:44px;height:44px;border-radius:11px;background:var(--accent);display:inline-grid;place-items:center;color:#fff;font-size:18px;transform:skewX(-10deg);box-shadow:0 10px 30px -8px rgba(255,59,47,.7)}
+.loader-title{font:italic 800 40px/1 var(--display);letter-spacing:.04em;margin:18px 0 22px}
+.loader-bar{height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.loader-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .35s}
+#loader-text{margin-top:14px;font-size:12px;color:var(--muted);letter-spacing:.04em}

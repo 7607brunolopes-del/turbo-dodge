@@ -1,0 +1,19 @@
+/* ---------- MODALS ---------- */
+.modal{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:rgba(5,7,10,.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:16px}
+.modal-card{width:100%;max-width:460px;padding:28px}
+.modal-card h2{font:italic 800 46px/1 var(--display);text-transform:uppercase;letter-spacing:.02em;margin:8px 0 20px}
+.modal-card h2.red{color:var(--accent)}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border-radius:12px;overflow:hidden;border:1px solid var(--line);margin-bottom:18px}
+.result-grid div{background:rgba(11,14,18,.95);padding:12px 14px}
+.result-grid small{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.result-grid b{font:700 26px/1.15 var(--display);font-variant-numeric:tabular-nums}
+.result-grid .big{grid-column:1/-1}
+.result-grid .big b{font-size:48px;font-style:italic;font-weight:800}
+.record{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:rgba(245,185,66,.12);border:1px solid rgba(245,185,66,.35);color:var(--gold);font-weight:700;font-size:13px;margin:-6px 0 18px}
+.btn-row{display:flex;gap:10px}
+.btn-row .primary-btn{margin-top:0;flex:1}
+.secondary-btn{height:56px;padding:0 20px;border-radius:12px;border:1px solid var(--line-2);background:rgba(255,255,255,.05);font:700 13px/1 var(--ui);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:8px;transition:background .2s}
+.secondary-btn:hover{background:rgba(255,255,255,.1)}
+.modal .field{margin-bottom:18px}
+.modal-actions{display:flex;flex-direction:column;gap:10px}
+.modal-actions .secondary-btn{justify-content:center}
